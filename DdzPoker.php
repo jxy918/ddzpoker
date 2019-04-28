@@ -95,15 +95,29 @@ class DdzPoker
         self::CARD_TYPE_HUOJIAN => '火箭',
     );
 
+    /**
+     * 洗好的牌
+     */
+    public $washed_cards;
+
+    /*
+     * 洗牌
+     */
+    public function washCards()
+    {
+        $cards = array_keys(self::$card_value_list);
+        shuffle($cards);
+        $show_cards = $this->crateCard($cards);
+        $this->washed_cards = array('cards' => $cards, 'show_cards' => $show_cards);
+    }
+
     /*
      * 发牌
      */
     public function dealCards()
     {
-        $cards = array_keys(self::$card_value_list);
-        //洗牌
+        $cards = $this->washed_cards['cards'];
         $user_card1 = $user_card2 = $user_card3 = $hand = array();
-        shuffle($cards);
         //每人发17张牌
         $chuank = array_chunk($cards, 51);
         $hand = $chuank[1];
@@ -910,6 +924,8 @@ class DdzPoker
 //测试用例
 $obj = new DdzPoker();
 echo '<pre>';
+$obj->washCards();
+var_dump('测试洗牌:----------------------------',$obj->washed_cards);
 var_dump('测试发牌:----------------------------',$obj->dealCards());
 var_dump('测试检查牌型:单张----------------------------',$obj->checkCardType(array(5)));
 var_dump('测试检查牌型:对子----------------------------',$obj->checkCardType(array(6, 22)));
